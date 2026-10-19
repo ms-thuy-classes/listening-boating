@@ -489,6 +489,121 @@ function beep(freq, dur, type='sine', vol=0.14, delay=0){
   }catch(e){}
 }
 const sfxCorrect = () => { beep(880,.13,'sine',.16); beep(1320,.18,'sine',.14,.09); };
+/* =========================================================
+   MUSIC MODULE — BGM + Victory + Sad (Web Audio API)
+   ========================================================= */
+const Music = (() => {
+  let ctx = null, bgmGain = null, bgmTimer = null;
+  let bgmActive = false, bgmPaused = false, bgmIdx = 0;
+
+  // Vòng hợp âm nhẹ nhàng: C – Am – F – G (dạng arpeggio)
+  const BGM_NOTES = [
+    261.63, 329.63, 392.00, 523.25, 392.00, 329.63,  // C major
+    220.00, 261.63, 329.63, 440.00, 329.63, 261.63,  // A minor
+    174.61, 220.00, 261.63, 349.23, 261.63, 220.00,  // F major
+    196.00, 246.94, 293.66, 392.00, 293.66, 246.94   // G major
+  ];
+  const BGM_STEP = 0.42;
+  const BGM_VOL  = 0.055;
+
+  function ensure(){
+    if (!ctx){
+      try { ctx = new (window.AudioContext || window.webkitAudioContext)(); }
+      catch(e){ return null; }
+    }
+    if (ctx.state === 'suspended') ctx.resume();
+    return ctx;
+  }
+
+  function bgmStep(){
+    if (!bgmActive || !ctx) return;
+    if (!bgmPaused){
+      const t = ctx.currentTime;
+      const freq = BGM_NOTES[bgmIdx % BGM_NOTES.length];
+      const o = ctx.createOscillator();
+      const g = ctx.createGain();
+      o.type = 'sine';
+      o.frequency.setValueAtTime(freq, t);
+      g.gain.setValueAtTime(0, t);
+      g.gain.linearRampToValueAtTime(BGM_VOL, t + 0.06);
+      g.gain.exponentialRampToValueAtTime(0.0008, t + BGM_STEP * 0.95);
+      o.connect(g); g.connect(bgmGain);
+      o.start(t); o.stop(t + BGM_STEP);
+    }
+    bgmIdx++;
+    bgmTimer = setTimeout(bgmStep, BGM_STEP * 1000);
+  }
+
+  return {
+    startBGM(){
+      const c = ensure(); if (!c) return;
+      this.stopBGM();
+      bgmGain = c.createGain();
+      bgmGain.gain.value = 1;
+      bgmGain.connect(c.destination);
+      bgmActive = true;
+      bgmPaused = false;
+      bgmIdx = 0;
+      bgmStep();
+    },
+    stopBGM(){
+      bgmActive = false;
+      bgmPaused = false;
+      if (bgmTimer){ clearTimeout(bgmTimer); bgmTimer = null; }
+      if (bgmGain && ctx){
+        try {
+          bgmGain.gain.setValueAtTime(bgmGain.gain.value, ctx.currentTime);
+          bgmGain.gain.exponentialRampToValueAtTime(0.0008, ctx.currentTime + 0.25);
+        } catch(e){}
+        const old = bgmGain;
+        setTimeout(() => { try{ old.disconnect(); }catch(e){} }, 350);
+        bgmGain = null;
+      }
+    },
+    pauseBGM(){ bgmPaused = true; },
+    resumeBGM(){ bgmPaused = false; },
+
+    playVictory(){
+      const c = ensure(); if (!c) return;
+      this.stopBGM();
+      // Fanfare đi lên: C5 – E5 – G5 – C6 – E6 – G6 – C7
+      const notes = [523.25, 659.25, 783.99, 1046.50, 1318.51, 1567.98, 2093.00];
+      const t0 = c.currentTime;
+      notes.forEach((f, i) => {
+        const t = t0 + i * 0.14;
+        const o = c.createOscillator();
+        const g = c.createGain();
+        o.type = 'triangle';
+        o.frequency.setValueAtTime(f, t);
+        g.gain.setValueAtTime(0, t);
+        g.gain.linearRampToValueAtTime(0.18, t + 0.02);
+        g.gain.exponentialRampToValueAtTime(0.0008, t + 0.5);
+        o.connect(g); g.connect(c.destination);
+        o.start(t); o.stop(t + 0.6);
+      });
+    },
+
+    playSad(){
+      const c = ensure(); if (!c) return;
+      this.stopBGM();
+      // Đi xuống buồn: A4 – F4 – D4 – C4 – A3 – F3
+      const notes = [440.00, 349.23, 293.66, 261.63, 220.00, 174.61];
+      const t0 = c.currentTime;
+      notes.forEach((f, i) => {
+        const t = t0 + i * 0.38;
+        const o = c.createOscillator();
+        const g = c.createGain();
+        o.type = 'sine';
+        o.frequency.setValueAtTime(f, t);
+        g.gain.setValueAtTime(0, t);
+        g.gain.linearRampToValueAtTime(0.16, t + 0.06);
+        g.gain.exponentialRampToValueAtTime(0.0008, t + 1.0);
+        o.connect(g); g.connect(c.destination);
+        o.start(t); o.stop(t + 1.1);
+      });
+    }
+  };
+})();
 const sfxWrong   = () => { beep(220,.22,'sawtooth',.11); beep(150,.28,'sawtooth',.11,.12); };
 const sfxClick   = () => { beep(520,.07,'triangle',.09); };
 
@@ -558,12 +673,12 @@ const G = { mode:'menu', lives:3, maxLives:3, score:0, qIndex:0, obstacle:null, 
 
 /* ---- Sprites ---- */
 const IMAGES = {
-  boat:     { url:'https://png.pngtree.com/png-vector/20240310/ourmid/pngtree-cartoon-boat-or-toy-ship-png-image_11921521.png', w:210, oy:10, anchor:0 },
-  rock:     { url:'https://png.pngtree.com/png-clipart/20250704/original/pngtree-big-rock-stone-isolated-on-transparent-background-png-image_21201528.png', w:150, oy:8, anchor:0 },
-  octopus:  { url:'https://png.pngtree.com/png-clipart/20250204/original/pngtree-cute-cartoon-octopus-clipart-illustration-png-image_19851575.png', w:150, oy:6, anchor:0.03 },
-  shark:    { url:'https://png.pngtree.com/png-vector/20250607/ourmid/pngtree-a-highly-detailed-3d-rendering-of-great-white-shark-swimming-through-png-image_16489810.png', w:240, oy:4, anchor:0.08 },
-  snake:    { url:'https://png.pngtree.com/png-vector/20250624/ourmid/pngtree-sea-snake-isolated-on-a-transparent-background-png-image_16583700.png', w:210, oy:4, anchor:0.08 },
-  jellyfish:{ url:'https://png.pngtree.com/png-clipart/20231005/original/pngtree-simple-pink-jellyfish-png-image_13125108.png', w:125, oy:6, anchor:0.50 }
+  boat:     { url:'https://png.pngtree.com/png-vector/20240310/ourmid/pngtree-cartoon-boat-or-toy-ship-png-image_11921521.png', w:210, oy:30, anchor:0 },
+  rock:     { url:'https://png.pngtree.com/png-clipart/20250704/original/pngtree-big-rock-stone-isolated-on-transparent-background-png-image_21201528.png', w:150, oy:20, anchor:0 },
+  octopus:  { url:'https://png.pngtree.com/png-clipart/20250204/original/pngtree-cute-cartoon-octopus-clipart-illustration-png-image_19851575.png', w:150, oy:15, anchor:0.03 },
+  shark:    { url:'https://png.pngtree.com/png-vector/20250607/ourmid/pngtree-a-highly-detailed-3d-rendering-of-great-white-shark-swimming-through-png-image_16489810.png', w:240, oy:17, anchor:0.08 },
+  snake:    { url:'https://png.pngtree.com/png-vector/20250624/ourmid/pngtree-sea-snake-isolated-on-a-transparent-background-png-image_16583700.png', w:210, oy:17, anchor:0.08 },
+  jellyfish:{ url:'https://png.pngtree.com/png-clipart/20231005/original/pngtree-simple-pink-jellyfish-png-image_13125108.png', w:125, oy:17, anchor:0.50 }
 };
 const sprites = {};
 let spriteScale = 1;
@@ -1085,6 +1200,7 @@ function startGame(){
   renderLives();
   updateHUD();
   spawnObstacle();
+     Music.startBGM();     
 }
 function spawnObstacle(){
   const q = LESSON.questions[G.qIndex];
@@ -1136,6 +1252,7 @@ function openQuestion(q){
   feedbackEl.textContent = '';
   feedbackEl.className = 'feedback';
   showModal(questionModal);
+     Music.pauseBGM();
   setTimeout(() => {
     inputEl.focus();
     playAudioForQuestion(q);
@@ -1186,6 +1303,7 @@ function handleCorrect(){
     boat.sinkAngle = 0;
     boat.sinkY = 0;
     G.mode = 'playing';
+      Music.resumeBGM();   
   }, 760);
 }
 
@@ -1227,6 +1345,7 @@ function retryQuestion(){
 function showEnd(win){
   G.mode = win ? 'won' : 'gameover';
   stopAudio();
+    win ? Music.playVictory() : Music.playSad();  
   $('endEmoji').textContent = win ? '🏆' : '💔';
   $('endTitle').textContent = win ? 'Hoàn thành bài học!' : 'Hết mạng rồi!';
   $('endMsg').textContent = win
@@ -1309,6 +1428,7 @@ inputEl.addEventListener('focus', () => {
 });
 
 function goHome(){
+     Music.stopBGM(); 
   history.pushState({}, '', location.pathname);
   showHome();
 }
