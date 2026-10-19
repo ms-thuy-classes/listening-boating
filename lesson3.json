@@ -1,1 +1,17 @@
-
+// lesson3.json
+{
+  "lesson_title": "Learn with Ms. Thúy – Travel & Transport",
+  "audio_url": null,
+  "questions": [
+    { "id":1, "obstacle_type":"rock",      "start_time":0, "end_time":0, "sentence_display":"We need to check in at the _____.", "correct_answer":"airport", "blank_length":1 },
+    { "id":2, "obstacle_type":"octopus",   "start_time":0, "end_time":0, "sentence_display":"Could you show me your _____?", "correct_answer":"passport", "blank_length":1 },
+    { "id":3, "obstacle_type":"shark",     "start_time":0, "end_time":0, "sentence_display":"The flight has been _____.", "correct_answer":"delayed", "blank_length":1 },
+    { "id":4, "obstacle_type":"snake",     "start_time":0, "end_time":0, "sentence_display":"I'd like a window _____, please.", "correct_answer":"seat", "blank_length":1 },
+    { "id":5, "obstacle_type":"jellyfish", "start_time":0, "end_time":0, "sentence_display":"How much is the _____ to the hotel?", "correct_answer":"taxi", "blank_length":1 },
+    { "id":6, "obstacle_type":"rock",      "start_time":0, "end_time":0, "sentence_display":"The train _____ at platform three.", "correct_answer":"leaves", "blank_length":1 },
+    { "id":7, "obstacle_type":"octopus",   "start_time":0, "end_time":0, "sentence_display":"Where is the _____ desk?", "correct_answer":"reception", "blank_length":1 },
+    { "id":8, "obstacle_type":"shark",     "start_time":0, "end_time":0, "sentence_display":"Can I have a _____ for two nights?", "correct_answer":"room", "blank_length":1 },
+    { "id":9, "obstacle_type":"snake",     "start_time":0, "end_time":0, "sentence_display":"We are _____ for the inconvenience.", "correct_answer":"sorry", "blank_length":1 },
+    { "id":10,"obstacle_type":"jellyfish", "start_time":0, "end_time":0, "sentence_display":"Please fasten your _____ belt.", "correct_answer":"seat", "blank_length":1 }
+  ]
+}
