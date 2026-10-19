@@ -1,0 +1,15 @@
+// lesson2.json
+{
+  "lesson_title": "Learn with Ms. Thúy – Daily Routines",
+  "audio_url": null,
+  "questions": [
+    { "id":1, "obstacle_type":"rock",      "start_time":0, "end_time":0, "sentence_display":"I usually _____ at six o'clock.", "correct_answer":"wake up", "blank_length":2 },
+    { "id":2, "obstacle_type":"octopus",   "start_time":0, "end_time":0, "sentence_display":"She _____ to work by bus.", "correct_answer":"goes", "blank_length":1 },
+    { "id":3, "obstacle_type":"shark",     "start_time":0, "end_time":0, "sentence_display":"He has _____ at seven thirty.", "correct_answer":"breakfast", "blank_length":1 },
+    { "id":4, "obstacle_type":"snake",     "start_time":0, "end_time":0, "sentence_display":"They _____ TV in the evening.", "correct_answer":"watch", "blank_length":1 },
+    { "id":5, "obstacle_type":"jellyfish", "start_time":0, "end_time":0, "sentence_display":"We _____ to bed at ten.", "correct_answer":"go", "blank_length":1 },
+    { "id":6, "obstacle_type":"rock",      "start_time":0, "end_time":0, "sentence_display":"My sister _____ her teeth twice a day.", "correct_answer":"brushes", "blank_length":1 },
+    { "id":7, "obstacle_type":"octopus",   "start_time":0, "end_time":0, "sentence_display":"I take a _____ before breakfast.", "correct_answer":"shower", "blank_length":1 },
+    { "id":8, "obstacle_type":"shark",     "start_time":0, "end_time":0, "sentence_display":"He _____ home at five thirty.", "correct_answer":"gets", "blank_length":1 }
+  ]
+}
