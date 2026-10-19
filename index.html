@@ -937,7 +937,6 @@ function drawBoat(t){
   drawOar( 1, t, power, -bh * 0.30, bh);
   if (boatImg) ctx.drawImage(boatImg, -bw / 2, cfg.oy - bh, bw, bh);
   else drawBoatHullFallback();
-  drawRower(bh);
   ctx.restore();
 }
 
