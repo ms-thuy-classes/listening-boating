@@ -1,0 +1,1364 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no" />
+<title>Learn with Ms. Thúy – Rowing Listener</title>
+<style>
+/* =========================================================
+   UI / CSS  —  Tách riêng khỏi logic game
+   ========================================================= */
+*,*::before,*::after{box-sizing:border-box;}
+html,body{
+  height:100%;margin:0;overflow:hidden;background:#0a2a44;
+  font-family:"Segoe UI",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif;
+  -webkit-tap-highlight-color:transparent;
+}
+body{user-select:none;-webkit-user-select:none;}
+#game{position:fixed;inset:0;width:100%;height:100%;display:block;touch-action:none;}
+
+/* ---------------- HUD ---------------- */
+#hud{
+  position:fixed;top:0;left:0;right:0;z-index:10;pointer-events:none;
+  display:flex;justify-content:space-between;align-items:flex-start;
+  gap:10px;padding:clamp(8px,1.6vw,18px);
+}
+.hud-col{display:flex;flex-direction:column;gap:8px;}
+.hud-col.right{align-items:flex-end;}
+.brand{
+  background:rgba(255,255,255,.94);border-radius:999px;padding:8px 16px;
+  font-weight:800;color:#0b3c5d;font-size:clamp(12px,2.1vw,16px);
+  box-shadow:0 6px 18px rgba(0,40,80,.25);white-space:nowrap;
+  backdrop-filter:blur(6px);
+}
+.lives{display:flex;gap:5px;font-size:clamp(15px,2.6vw,21px);filter:drop-shadow(0 2px 4px rgba(0,0,0,.35));}
+.heart{transition:transform .25s ease, opacity .25s;}
+.heart.lost{opacity:.35;filter:grayscale(1);transform:scale(.85);}
+.stat{
+  display:flex;align-items:center;gap:7px;background:rgba(255,255,255,.94);
+  border-radius:999px;padding:6px 14px;font-weight:800;color:#0b3c5d;
+  font-size:clamp(12px,2.1vw,15px);box-shadow:0 6px 18px rgba(0,40,80,.25);
+  backdrop-filter:blur(6px);
+}
+.progress-wrap{width:clamp(118px,32vw,240px);}
+.progress{
+  height:10px;border-radius:999px;background:rgba(255,255,255,.45);overflow:hidden;
+  box-shadow:inset 0 1px 3px rgba(0,0,0,.22);
+}
+#progressFill{
+  height:100%;width:0;border-radius:999px;
+  background:linear-gradient(90deg,#7bed9f,#2ecc71);
+  transition:width .45s cubic-bezier(.3,.9,.4,1);
+}
+.prog-text{font-size:11px;font-weight:800;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.5);text-align:right;margin-top:3px;}
+
+/* ---------------- MODAL ---------------- */
+.modal{
+  position:fixed;inset:0;z-index:20;display:flex;align-items:center;justify-content:center;
+  padding:14px;background:rgba(5,25,45,.5);backdrop-filter:blur(4px);
+  animation:fade .22s ease-out;
+}
+.modal.hidden{display:none;}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+.card{
+  width:min(660px,100%);max-height:calc(100dvh - 28px);overflow-y:auto;
+  background:#fff;border-radius:22px;padding:clamp(16px,3vw,30px);
+  box-shadow:0 26px 60px rgba(0,20,40,.42);
+  animation:pop .28s cubic-bezier(.2,.9,.3,1.25);
+  -webkit-overflow-scrolling:touch;
+}
+@keyframes pop{from{transform:scale(.9);opacity:0}to{transform:scale(1);opacity:1}}
+
+/* ---------------- START ---------------- */
+.start-card{text-align:center;}
+.logo{
+  display:inline-block;background:linear-gradient(135deg,#37c6ff,#1e88e5);
+  color:#fff;font-weight:900;border-radius:999px;padding:8px 20px;
+  font-size:clamp(13px,2.4vw,16px);letter-spacing:.3px;
+  box-shadow:0 8px 20px rgba(30,136,229,.35);
+}
+.start-card h1{
+  font-size:clamp(26px,6vw,40px);margin:16px 0 6px;color:#0b3c5d;letter-spacing:-.5px;
+}
+.start-card p{color:#4b6579;font-size:clamp(14px,2.4vw,17px);margin:0 0 14px;line-height:1.55;}
+.tips{
+  list-style:none;padding:0;margin:0 auto 22px;max-width:400px;text-align:left;
+  display:flex;flex-direction:column;gap:9px;
+}
+.tips li{
+  background:#f2f8fd;border-radius:12px;padding:11px 14px;font-size:clamp(13px,2.2vw,15px);
+  color:#25455c;font-weight:600;
+}
+
+/* ---------------- BUTTONS ---------------- */
+.btn{
+  border:none;border-radius:15px;padding:14px 24px;font-weight:800;font-family:inherit;
+  font-size:clamp(15px,2.2vw,17px);cursor:pointer;touch-action:manipulation;
+  transition:transform .12s ease, box-shadow .12s ease, filter .15s;
+  display:inline-flex;align-items:center;justify-content:center;gap:9px;
+}
+.btn:active{transform:translateY(3px);}
+.btn.primary{
+  background:linear-gradient(180deg,#37c6ff,#1e88e5);color:#fff;
+  box-shadow:0 5px 0 #0f5fa8, 0 12px 22px rgba(30,136,229,.38);
+}
+.btn.primary:active{box-shadow:0 1px 0 #0f5fa8, 0 6px 12px rgba(30,136,229,.3);}
+.btn.audio{
+  background:linear-gradient(180deg,#ffd95c,#ffb300);color:#5a3d00;
+  box-shadow:0 5px 0 #c98a00, 0 12px 22px rgba(255,179,0,.38);
+  padding:14px 26px;
+}
+.btn.audio:active{box-shadow:0 1px 0 #c98a00;}
+.btn.audio .spk{font-size:1.25em;line-height:1;}
+.btn.ghost{
+  background:#eef5fb;color:#25506e;box-shadow:0 4px 0 #cfe0ee;
+}
+.btn.ghost:active{box-shadow:0 1px 0 #cfe0ee;}
+.btn.wide{width:100%;}
+
+/* ---------------- QUESTION CARD ---------------- */
+.q-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap;}
+.pill{
+  background:#e8f4ff;color:#1666a8;font-weight:800;border-radius:999px;
+  padding:6px 14px;font-size:clamp(11px,1.9vw,13px);white-space:nowrap;
+}
+.pill.alt{background:#fff3d6;color:#a06a00;}
+
+.sentence{
+  font-size:clamp(19px,3.7vw,27px);line-height:1.85;font-weight:700;color:#0d2b3e;
+  text-align:center;margin:4px 0 20px;word-break:break-word;
+}
+.blank{
+  display:inline-block;min-width:56px;height:1.3em;vertical-align:-0.22em;
+  border-bottom:3px solid #1e88e5;background:rgba(30,136,229,.09);
+  border-radius:7px 7px 0 0;margin:0 4px;
+}
+
+.audio-row{display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap;margin-bottom:18px;}
+.hint{font-size:12px;color:#8aa2b5;font-weight:600;}
+
+.answer-row{display:flex;gap:10px;flex-wrap:wrap;}
+#answerInput{
+  flex:1 1 200px;min-width:0;border:2px solid #cfe3f2;border-radius:15px;
+  padding:14px 16px;font-size:16px;font-family:inherit;font-weight:700;color:#0d2b3e;
+  outline:none;background:#f7fbff;transition:border-color .15s, box-shadow .15s, background .15s;
+}
+#answerInput::placeholder{font-weight:600;color:#9fb6c7;}
+#answerInput:focus{border-color:#1e88e5;box-shadow:0 0 0 4px rgba(30,136,229,.16);}
+#answerInput.correct{border-color:#2ecc71;background:#eafff3;box-shadow:0 0 0 4px rgba(46,204,113,.2);}
+#answerInput.wrong{border-color:#e74c3c;background:#fff1ef;box-shadow:0 0 0 4px rgba(231,76,60,.16);animation:shake .38s;}
+@keyframes shake{
+  0%,100%{transform:translateX(0)}
+  20%{transform:translateX(-9px)}40%{transform:translateX(9px)}
+  60%{transform:translateX(-6px)}80%{transform:translateX(6px)}
+}
+
+.feedback{min-height:24px;margin-top:12px;text-align:center;font-weight:800;font-size:clamp(14px,2.3vw,16px);}
+.feedback.ok{color:#1e9e56;}
+.feedback.bad{color:#d63a2c;}
+
+/* ---------------- END / RETRY ---------------- */
+.center{text-align:center;}
+.big-emoji{font-size:clamp(40px,10vw,62px);line-height:1;margin-bottom:10px;}
+.end-title{font-size:clamp(22px,4.6vw,32px);color:#0b3c5d;margin:0 0 8px;font-weight:900;}
+.end-msg{color:#5b7488;font-size:clamp(14px,2.4vw,16px);margin:0 0 18px;line-height:1.55;}
+.score-box{
+  background:linear-gradient(135deg,#fff8e1,#ffecb3);border-radius:16px;padding:16px;
+  margin:0 auto 14px;max-width:280px;
+}
+.score-box .num{font-size:clamp(28px,7vw,40px);font-weight:900;color:#c07a00;line-height:1;}
+.score-box .lbl{font-size:12px;font-weight:800;color:#a3761d;letter-spacing:1px;text-transform:uppercase;}
+.answer-box{
+  background:#eef7ff;border-radius:14px;padding:13px 16px;color:#1a5f96;
+  font-weight:800;font-size:clamp(14px,2.4vw,16px);margin-bottom:20px;
+}
+.btn-row{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;}
+.btn-row .btn{flex:1 1 150px;}
+</style>
+</head>
+<body>
+
+<!-- ===================== CANVAS GAME ===================== -->
+<canvas id="game"></canvas>
+
+<!-- ===================== HUD ===================== -->
+<header id="hud">
+  <div class="hud-col">
+    <div class="brand">🚣 Learn with Ms. Thúy</div>
+    <div class="lives" id="lives"></div>
+  </div>
+  <div class="hud-col right">
+    <div class="stat">⭐ <span id="score">0</span></div>
+    <div class="progress-wrap">
+      <div class="progress"><div id="progressFill"></div></div>
+      <div class="prog-text" id="progText">0/0</div>
+    </div>
+  </div>
+</header>
+
+<!-- ===================== START SCREEN ===================== -->
+<div class="modal" id="startModal">
+  <div class="card start-card">
+    <div class="logo">Learn with Ms. Thúy</div>
+    <h1>Rowing Listener</h1>
+    <p>Chèo thuyền vượt đại dương bằng cách <b>nghe</b> và <b>điền đúng</b> từ còn thiếu!</p>
+    <ul class="tips">
+      <li>🎧 Nghe audio và điền từ vào chỗ trống</li>
+      <li>⛔ Trả lời sai sẽ mất 1 mạng (❤️)</li>
+      <li>⭐ Mỗi câu đúng nhận 100 điểm</li>
+      <li>🔁 Có thể nghe lại không giới hạn số lần</li>
+    </ul>
+    <button class="btn primary wide" id="btnStart">Bắt đầu chơi</button>
+  </div>
+</div>
+
+<!-- ===================== QUESTION MODAL ===================== -->
+<div class="modal hidden" id="questionModal">
+  <div class="card">
+    <div class="q-head">
+      <span class="pill" id="qBadge">Câu 1 / 8</span>
+      <span class="pill alt" id="qObstacle">🪨 Rock</span>
+    </div>
+
+    <p class="sentence" id="sentence"></p>
+
+    <div class="audio-row">
+      <button class="btn audio" id="btnReplay"><span class="spk">🔊</span> Nghe lại</button>
+      <span class="hint">Audio tự động phát lần đầu</span>
+    </div>
+
+    <div class="answer-row">
+      <input id="answerInput" type="text" autocomplete="off" autocapitalize="off"
+             autocorrect="off" spellcheck="false" enterkeyhint="done"
+             placeholder="Nhập từ / cụm từ còn thiếu..." />
+      <button class="btn primary" id="btnCheck">Kiểm tra</button>
+    </div>
+
+    <div class="feedback" id="feedback"></div>
+  </div>
+</div>
+
+<!-- ===================== RETRY MODAL ===================== -->
+<div class="modal hidden" id="retryModal">
+  <div class="card center">
+    <div class="big-emoji">🌊</div>
+    <h2 class="end-title">Thuyền bị tấn công!</h2>
+    <p class="end-msg">Bạn còn <b id="retryLives">2</b> mạng. Thử lại câu này nhé!</p>
+    <div class="btn-row">
+      <button class="btn primary" id="btnRetry">🔁 Thử lại câu này</button>
+      <button class="btn ghost" id="btnRestartFromRetry">↺ Chơi lại từ đầu</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== END MODAL ===================== -->
+<div class="modal hidden" id="endModal">
+  <div class="card center">
+    <div class="big-emoji" id="endEmoji">🏆</div>
+    <h2 class="end-title" id="endTitle">Hoàn thành!</h2>
+    <p class="end-msg" id="endMsg"></p>
+    <div class="score-box">
+      <div class="num" id="endScore">0</div>
+      <div class="lbl">Điểm của bạn</div>
+    </div>
+    <div class="answer-box" id="endAnswer"></div>
+    <div class="btn-row">
+      <button class="btn primary" id="btnPlayAgain">↺ Chơi lại từ đầu</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* =========================================================================
+   1) DỮ LIỆU BÀI HỌC  (LESSON DATA)
+   ========================================================================= */
+const LESSON = {
+  lesson_title: "Learn with Ms. Thúy - Chapter 1",
+  audio_url: null,                 // ví dụ: "listening_track_1.mp3"
+  questions: [
+    { id:1, obstacle_type:"rock",      start_time:0.5, end_time:4.2,
+      sentence_display:"She goes to the _____ every morning.",
+      correct_answer:"market", blank_length:1 },
+
+    { id:2, obstacle_type:"octopus",   start_time:4.5, end_time:9.0,
+      sentence_display:"They are planning to _____ next week.",
+      correct_answer:"buy a car", blank_length:3 },
+
+    { id:3, obstacle_type:"shark",     start_time:9.4, end_time:13.1,
+      sentence_display:"I usually _____ at six o'clock.",
+      correct_answer:"wake up", blank_length:2 },
+
+    { id:4, obstacle_type:"snake",     start_time:13.5, end_time:18.0,
+      sentence_display:"The weather is really _____ today.",
+      correct_answer:"nice and warm", blank_length:3 },
+
+    { id:5, obstacle_type:"jellyfish", start_time:18.4, end_time:22.2,
+      sentence_display:"He has lived here _____ 2015.",
+      correct_answer:"since", blank_length:1 },
+
+    { id:6, obstacle_type:"rock",      start_time:22.6, end_time:26.5,
+      sentence_display:"Could you please _____ the window?",
+      correct_answer:"open", blank_length:1 },
+
+    { id:7, obstacle_type:"octopus",   start_time:26.9, end_time:31.4,
+      sentence_display:"We should _____ before the rain comes.",
+      correct_answer:"head back home", blank_length:3 },
+
+    { id:8, obstacle_type:"shark",     start_time:31.8, end_time:35.6,
+      sentence_display:"My sister is good _____ playing the piano.",
+      correct_answer:"at", blank_length:1 }
+  ]
+};
+
+const OBSTACLE_LABEL = {
+  rock: "🪨 Rock",
+  shark: "🦈 Shark",
+  octopus: "🐙 Octopus",
+  snake: "🐍 Sea Snake",
+  jellyfish: "🪼 Jellyfish"
+};
+
+/* =========================================================================
+   1b) SPRITE IMAGES  —  Ảnh PNG cho từng đối tượng
+   -------------------------------------------------------------------------
+   w      : chiều rộng gốc (px) — tự nhân với spriteScale theo màn hình
+   oy     : dịch dọc (dương = chìm xuống dưới mặt nước)
+   anchor : 0 = đáy ảnh đặt tại mặt nước, 0.5 = giữa ảnh đặt tại mặt nước
+   -------------------------------------------------------------------------
+   ⚠️ pngtree có thể chặn hotlink. Nếu ảnh không hiện, hãy tải về và đổi
+      url thành đường dẫn cục bộ, ví dụ: './assets/rock.png'
+   ========================================================================= */
+const IMAGES = {
+  boat: {
+    url: 'https://png.pngtree.com/png-vector/20240310/ourmid/pngtree-cartoon-boat-or-toy-ship-png-image_11921521.png',
+    w: 210, oy: 10, anchor: 0
+  },
+  rock: {
+    url: 'https://png.pngtree.com/png-clipart/20250704/original/pngtree-big-rock-stone-isolated-on-transparent-background-png-image_21201528.png',
+    w: 150, oy: 8, anchor: 0
+  },
+  octopus: {
+    url: 'https://png.pngtree.com/png-clipart/20250204/original/pngtree-cute-cartoon-octopus-clipart-illustration-png-image_19851575.png',
+    w: 150, oy: 6, anchor: 0.03
+  },
+  shark: {
+    url: 'https://png.pngtree.com/png-vector/20250607/ourmid/pngtree-a-highly-detailed-3d-rendering-of-great-white-shark-swimming-through-png-image_16489810.png',
+    w: 240, oy: 4, anchor: 0.08
+  },
+  snake: {
+    url: 'https://png.pngtree.com/png-vector/20250624/ourmid/pngtree-sea-snake-isolated-on-a-transparent-background-png-image_16583700.png',
+    w: 210, oy: 4, anchor: 0.08
+  },
+  jellyfish: {
+    url: 'https://png.pngtree.com/png-clipart/20231005/original/pngtree-simple-pink-jellyfish-png-image_13125108.png',
+    w: 125, oy: 6, anchor: 0.50
+  }
+};
+
+const sprites = {};        // key -> HTMLImageElement (chỉ khi tải thành công)
+let spriteScale = 1;       // hệ số scale theo bề rộng màn hình
+
+function loadSprites(){
+  for (const key in IMAGES){
+    const img = new Image();
+    img.decoding = 'async';
+    img.onload  = () => { sprites[key] = img; };
+    img.onerror = () => { console.warn('[sprite] Không tải được ảnh:', key); };
+    img.src = IMAGES[key].url;
+  }
+}
+
+/* Vẽ sprite với đáy (hoặc anchor) đặt tại gốc toạ độ hiện tại */
+function drawSprite(key){
+  const img = sprites[key], cfg = IMAGES[key];
+  if (!img || !cfg) return false;
+  const w = cfg.w * spriteScale;
+  const h = w * (img.naturalHeight / img.naturalWidth);
+  const x = -w / 2;
+  const y = (cfg.oy || 0) + (cfg.anchor || 0) * h - h;
+  ctx.drawImage(img, x, y, w, h);
+  return true;
+}
+
+/* =========================================================================
+   2) LÕI GAME (GAME ENGINE) — Canvas 2D
+   ========================================================================= */
+const canvas = document.getElementById('game');
+const ctx = canvas.getContext('2d');
+
+let W = 0, H = 0, DPR = 1, waterY = 0;
+const BASE_SPEED = 260;
+let clouds = [];
+
+const boat = { x: 160, speed: 0, sinkAngle: 0, sinkY: 0 };
+
+const G = {
+  mode: 'menu',
+  lives: 3, maxLives: 3,
+  score: 0, qIndex: 0,
+  obstacle: null,
+  particles: [],
+  spawnTimer: 0,
+  time: 0, sinkT: 0
+};
+
+/* ---------------- Resize ---------------- */
+function resize(){
+  DPR = Math.min(window.devicePixelRatio || 1, 2);
+  W = window.innerWidth;
+  H = window.innerHeight;
+  canvas.width  = Math.floor(W * DPR);
+  canvas.height = Math.floor(H * DPR);
+  canvas.style.width  = W + 'px';
+  canvas.style.height = H + 'px';
+  ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+
+  waterY = Math.round(H * 0.60);
+  boat.x = Math.max(80, Math.min(W * 0.26, 240));
+
+  // sprite to nhỏ theo màn hình (0.5x trên mobile → 1.05x trên desktop)
+  spriteScale = Math.max(0.5, Math.min(1.05, W / 1000));
+
+  if (G.obstacle) G.obstacle.stopX = boat.x + Math.min(230, W * 0.32);
+  layoutClouds();
+}
+window.addEventListener('resize', resize);
+window.addEventListener('orientationchange', () => setTimeout(resize, 120));
+
+function layoutClouds(){
+  clouds = [];
+  const n = Math.max(3, Math.round(W / 380));
+  for (let i = 0; i < n; i++){
+    clouds.push({
+      x: Math.random() * (W + 300) - 150,
+      y: 24 + Math.random() * (waterY * 0.5),
+      s: 0.55 + Math.random() * 0.85,
+      speed: 5 + Math.random() * 11
+    });
+  }
+}
+
+/* ---------------- Âm thanh hiệu ứng ---------------- */
+let actx = null;
+function beep(freq, dur, type = 'sine', vol = 0.14, delay = 0){
+  try{
+    if (!actx) actx = new (window.AudioContext || window.webkitAudioContext)();
+    const t0 = actx.currentTime + delay;
+    const o = actx.createOscillator();
+    const g = actx.createGain();
+    o.type = type;
+    o.frequency.setValueAtTime(freq, t0);
+    g.gain.setValueAtTime(vol, t0);
+    g.gain.exponentialRampToValueAtTime(0.0008, t0 + dur);
+    o.connect(g); g.connect(actx.destination);
+    o.start(t0); o.stop(t0 + dur + 0.02);
+  }catch(e){}
+}
+const sfxCorrect = () => { beep(880, .13, 'sine', .16); beep(1320, .18, 'sine', .14, .09); };
+const sfxWrong   = () => { beep(220, .22, 'sawtooth', .11); beep(150, .28, 'sawtooth', .11, .12); };
+const sfxClick   = () => { beep(520, .07, 'triangle', .09); };
+
+/* ---------------- Audio bài học ---------------- */
+let audioEl = null, segEnd = null;
+
+function initAudio(){
+  if (!LESSON.audio_url) return;
+  audioEl = new Audio();
+  audioEl.src = LESSON.audio_url;
+  audioEl.preload = 'auto';
+  audioEl.addEventListener('timeupdate', () => {
+    if (segEnd != null && audioEl.currentTime >= segEnd){
+      audioEl.pause();
+      segEnd = null;
+    }
+  });
+  audioEl.addEventListener('error', () => { audioEl = null; });
+}
+
+function stopAudio(){
+  if (audioEl){ try{ audioEl.pause(); }catch(e){} }
+  segEnd = null;
+  if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+}
+
+function speak(q){
+  if (!('speechSynthesis' in window)) return;
+  const text = q.sentence_display.replace(/_{2,}/g, q.correct_answer);
+  window.speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = 'en-US';
+  u.rate = 0.88;
+  u.pitch = 1;
+  const voices = window.speechSynthesis.getVoices() || [];
+  const v = voices.find(x => /en[-_]US/i.test(x.lang)) || voices.find(x => /^en/i.test(x.lang));
+  if (v) u.voice = v;
+  window.speechSynthesis.speak(u);
+}
+
+function playAudioForQuestion(q){
+  if (!q) return;
+  stopAudio();
+  if (audioEl && audioEl.readyState >= 2){
+    try{
+      audioEl.currentTime = q.start_time || 0;
+      segEnd = q.end_time || null;
+      const p = audioEl.play();
+      if (p && p.catch) p.catch(() => speak(q));
+      return;
+    }catch(e){}
+  }
+  speak(q);
+}
+
+/* ---------------- Vòng lặp game ---------------- */
+let lastT = performance.now();
+function loop(now){
+  const dt = Math.min((now - lastT) / 1000, 0.05);
+  lastT = now;
+  update(dt);
+  render(now / 1000);
+  requestAnimationFrame(loop);
+}
+
+/* ---------------- UPDATE ---------------- */
+function update(dt){
+  G.time += dt;
+  const t = G.time;
+
+  for (const c of clouds){
+    c.x -= c.speed * dt;
+    if (c.x < -200){ c.x = W + 200; c.y = 24 + Math.random() * (waterY * 0.5); }
+  }
+
+  for (let i = G.particles.length - 1; i >= 0; i--){
+    const p = G.particles[i];
+    p.x += p.vx * dt;
+    p.y += p.vy * dt;
+    p.vy += p.g * dt;
+    p.life -= dt;
+    if (p.life <= 0) G.particles.splice(i, 1);
+  }
+
+  if (G.mode === 'playing'){
+    const o = G.obstacle;
+
+    if (o){
+      if (o.state === 'dying'){
+        o.dieT += dt;
+        o.x -= 230 * dt;
+        o.dy -= 150 * dt;
+        o.rot = (o.rot || 0) + dt * 2.6;
+        boat.speed = BASE_SPEED;
+        if (o.dieT > 0.7){
+          G.obstacle = null;
+          G.spawnTimer = 0.45;
+          if (G.qIndex >= LESSON.questions.length){
+            G.mode = 'won';
+            setTimeout(() => showEnd(true), 380);
+          }
+        }
+      } else {
+        const dist = o.x - o.stopX;
+        const f = Math.max(0, Math.min(1, dist / 380));
+        const spd = BASE_SPEED * (0.10 + 0.90 * f);
+        o.x -= spd * dt;
+        boat.speed = spd;
+        if (o.x <= o.stopX){
+          o.x = o.stopX;
+          boat.speed = 0;
+          triggerQuestion();
+        }
+      }
+    } else {
+      boat.speed = BASE_SPEED;
+      if (G.spawnTimer > 0){
+        G.spawnTimer -= dt;
+        if (G.spawnTimer <= 0 && G.qIndex < LESSON.questions.length) spawnObstacle();
+      }
+    }
+
+  } else if (G.mode === 'sinking'){
+    boat.speed = 0;
+    G.sinkT += dt;
+    boat.sinkAngle = Math.min(1, G.sinkT / 1.2) * 0.55;
+    boat.sinkY     = Math.min(1, G.sinkT / 1.5) * 95;
+    if (G.sinkT > 1.7){
+      if (G.lives > 0) showRetry(); else showEnd(false);
+    }
+
+  } else {
+    boat.speed += (0 - boat.speed) * Math.min(1, dt * 5);
+  }
+}
+
+/* ---------------- RENDER ---------------- */
+function render(t){
+  drawSky(t);
+  drawSun(t);
+  drawClouds();
+  drawWater(t);
+  drawObstacle(t);
+  drawBoat(t);
+  drawParticles();
+}
+
+function drawSky(){
+  const g = ctx.createLinearGradient(0, 0, 0, waterY);
+  g.addColorStop(0,   '#79cdf7');
+  g.addColorStop(0.55,'#a9e0fb');
+  g.addColorStop(1,   '#e2f6ff');
+  ctx.fillStyle = g;
+  ctx.fillRect(0, 0, W, waterY + 2);
+}
+
+function drawSun(t){
+  const sx = W * 0.82, sy = H * 0.15, r = Math.min(W, H) * 0.055;
+  const glow = ctx.createRadialGradient(sx, sy, r * 0.5, sx, sy, r * 4.2);
+  glow.addColorStop(0, 'rgba(255,244,180,.85)');
+  glow.addColorStop(0.35,'rgba(255,230,130,.28)');
+  glow.addColorStop(1, 'rgba(255,230,130,0)');
+  ctx.fillStyle = glow;
+  ctx.beginPath(); ctx.arc(sx, sy, r * 4.2, 0, Math.PI * 2); ctx.fill();
+
+  ctx.fillStyle = '#fff3b0';
+  ctx.beginPath(); ctx.arc(sx, sy, r * (1 + Math.sin(t * 1.4) * 0.03), 0, Math.PI * 2); ctx.fill();
+}
+
+function drawClouds(){
+  ctx.save();
+  ctx.fillStyle = 'rgba(255,255,255,.86)';
+  for (const c of clouds){
+    const s = c.s;
+    ctx.beginPath();
+    ctx.arc(c.x,           c.y,          28 * s, 0, Math.PI * 2);
+    ctx.arc(c.x + 32 * s,  c.y - 12 * s, 34 * s, 0, Math.PI * 2);
+    ctx.arc(c.x + 70 * s,  c.y,          26 * s, 0, Math.PI * 2);
+    ctx.arc(c.x + 36 * s,  c.y + 10 * s, 28 * s, 0, Math.PI * 2);
+    ctx.fill();
+  }
+  ctx.restore();
+}
+
+function wavePath(y, amp, len, speed, t){
+  ctx.beginPath();
+  for (let x = -10; x <= W + 10; x += 10){
+    const yy = y
+      + Math.sin(x / len + t * speed) * amp
+      + Math.sin(x / (len * 0.47) + t * speed * 1.7) * amp * 0.34;
+    if (x === -10) ctx.moveTo(x, yy); else ctx.lineTo(x, yy);
+  }
+}
+
+function drawWater(t){
+  const g = ctx.createLinearGradient(0, waterY, 0, H);
+  g.addColorStop(0,   '#4fc3f7');
+  g.addColorStop(0.45,'#1e88e5');
+  g.addColorStop(1,   '#093f6b');
+  ctx.fillStyle = g;
+  ctx.fillRect(0, waterY, W, H - waterY);
+
+  const sx = W * 0.82;
+  const rg = ctx.createLinearGradient(sx, waterY, sx, waterY + H * 0.3);
+  rg.addColorStop(0, 'rgba(255,245,180,.45)');
+  rg.addColorStop(1, 'rgba(255,245,180,0)');
+  ctx.fillStyle = rg;
+  ctx.beginPath();
+  ctx.moveTo(sx - 30, waterY);
+  ctx.lineTo(sx + 30, waterY);
+  ctx.lineTo(sx + 90, waterY + H * 0.3);
+  ctx.lineTo(sx - 90, waterY + H * 0.3);
+  ctx.closePath();
+  ctx.fill();
+
+  const layers = [
+    { y: waterY + 10,  amp: 5,  len: 90,  sp: 1.2,  c: 'rgba(255,255,255,.40)', w: 3 },
+    { y: waterY + 48,  amp: 8,  len: 130, sp: 0.85, c: 'rgba(255,255,255,.22)', w: 4 },
+    { y: waterY + 110, amp: 12, len: 180, sp: 0.58, c: 'rgba(255,255,255,.14)', w: 5 },
+    { y: waterY + 190, amp: 16, len: 240, sp: 0.36, c: 'rgba(255,255,255,.09)', w: 7 }
+  ];
+  ctx.lineCap = 'round';
+  for (const L of layers){
+    ctx.strokeStyle = L.c;
+    ctx.lineWidth = L.w;
+    wavePath(L.y, L.amp, L.len, L.sp, t);
+    ctx.stroke();
+  }
+
+  ctx.strokeStyle = 'rgba(255,255,255,.55)';
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(0, waterY);
+  ctx.lineTo(W, waterY);
+  ctx.stroke();
+}
+
+/* =========================================================
+   THUYỀN — dùng ảnh PNG + mái chèo động + nhân vật chèo
+   ========================================================= */
+function drawOar(dir, t, power, pivotY, refH){
+  const sc = Math.max(0.7, Math.min(1.15, refH / 110));
+  const swing = Math.sin(t * 5.5) * 0.42 * power;
+  ctx.save();
+  ctx.translate(0, pivotY);
+  ctx.rotate(dir * (0.42 + swing));
+  ctx.strokeStyle = '#8d5a2b';
+  ctx.lineWidth = 5 * sc;
+  ctx.lineCap = 'round';
+  ctx.beginPath();
+  ctx.moveTo(0, 0);
+  ctx.lineTo(dir * 92 * sc, 30 * sc);
+  ctx.stroke();
+  ctx.fillStyle = '#c98a4b';
+  ctx.beginPath();
+  ctx.ellipse(dir * 100 * sc, 36 * sc, 13 * sc, 7 * sc, dir * 0.42, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.restore();
+}
+
+function drawRower(boatH){
+  const s = Math.max(0.7, Math.min(1.1, boatH / 95));
+  ctx.save();
+  ctx.translate(0, -boatH * 0.42);
+  ctx.scale(s, s);
+
+  // thân áo
+  ctx.fillStyle = '#e74c3c';
+  ctx.beginPath();
+  ctx.moveTo(-12, 0);
+  ctx.quadraticCurveTo(-16, -30, 0, -33);
+  ctx.quadraticCurveTo(16, -30, 12, 0);
+  ctx.closePath();
+  ctx.fill();
+
+  // đầu
+  ctx.fillStyle = '#ffd7a8';
+  ctx.beginPath(); ctx.arc(0, -44, 11, 0, Math.PI * 2); ctx.fill();
+
+  // tóc
+  ctx.fillStyle = '#3b2a1e';
+  ctx.beginPath(); ctx.arc(0, -47, 11, Math.PI * 1.05, Math.PI * 1.95); ctx.fill();
+
+  // nón
+  ctx.fillStyle = '#f2c14e';
+  ctx.beginPath(); ctx.ellipse(0, -54, 18, 5.5, 0, 0, Math.PI * 2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(0, -57, 10, 8, 0, Math.PI, 0); ctx.fill();
+
+  ctx.restore();
+}
+
+/* Thân thuyền vector — dự phòng khi ảnh chưa tải xong */
+function drawBoatHullFallback(){
+  const HW = 78, HH = 34;
+  const hullGrad = ctx.createLinearGradient(0, -HH * 0.4, 0, HH);
+  hullGrad.addColorStop(0,   '#d08347');
+  hullGrad.addColorStop(0.55,'#a4571f');
+  hullGrad.addColorStop(1,   '#6f3910');
+  ctx.fillStyle = hullGrad;
+  ctx.beginPath();
+  ctx.moveTo(-HW, -HH * 0.35);
+  ctx.quadraticCurveTo(-HW * 0.85, HH * 0.95, 0, HH);
+  ctx.quadraticCurveTo( HW * 0.85, HH * 0.95, HW, -HH * 0.35);
+  ctx.quadraticCurveTo(0, -HH * 0.02, -HW, -HH * 0.35);
+  ctx.closePath();
+  ctx.fill();
+  ctx.strokeStyle = '#5b2d0b';
+  ctx.lineWidth = 3;
+  ctx.stroke();
+
+  ctx.strokeStyle = 'rgba(255,255,255,.35)';
+  ctx.lineWidth = 3;
+  ctx.beginPath();
+  ctx.moveTo(-HW + 6, -HH * 0.33);
+  ctx.quadraticCurveTo(0, -HH * 0.02, HW - 6, -HH * 0.33);
+  ctx.stroke();
+}
+
+function drawBoat(t){
+  const bx = boat.x;
+  const by = waterY + Math.sin(t * 2.2) * 3.5 + boat.sinkY;
+  const power = Math.min(1, boat.speed / BASE_SPEED);
+
+  ctx.save();
+  ctx.translate(bx, by);
+  ctx.rotate(boat.sinkAngle);
+
+  // bọt nước / wake
+  ctx.globalAlpha = 0.5;
+  ctx.fillStyle = '#ffffff';
+  ctx.beginPath(); ctx.ellipse(-46, 15, 74, 12, 0, 0, Math.PI * 2); ctx.fill();
+  ctx.globalAlpha = 0.28;
+  ctx.beginPath(); ctx.ellipse(-86, 17, 46, 8, 0, 0, Math.PI * 2); ctx.fill();
+  ctx.globalAlpha = 1;
+
+  const boatImg = sprites.boat;
+  const cfg = IMAGES.boat;
+  const bw = cfg.w * spriteScale;
+  const bh = boatImg ? bw * (boatImg.naturalHeight / boatImg.naturalWidth) : 60;
+
+  // mái chèo (vẽ phía sau thuyền)
+  drawOar(-1, t, power, -bh * 0.30, bh);
+  drawOar( 1, t, power, -bh * 0.30, bh);
+
+  // thân thuyền
+  if (boatImg){
+    ctx.drawImage(boatImg, -bw / 2, cfg.oy - bh, bw, bh);
+  } else {
+    drawBoatHullFallback();
+  }
+
+  // nhân vật chèo
+  drawRower(bh);
+
+  ctx.restore();
+}
+
+/* =========================================================
+   CHƯỚNG NGẠI VẬT — dùng ảnh PNG, fallback vector
+   ========================================================= */
+function drawObstacle(t){
+  const o = G.obstacle;
+  if (!o) return;
+  const bob = Math.sin(t * 2 + o.phase) * 5;
+
+  ctx.save();
+  ctx.translate(o.x, waterY + bob + (o.dy || 0));
+  if (o.state === 'dying'){
+    const k = Math.min(1, o.dieT / 0.7);
+    ctx.globalAlpha = 1 - k;
+    ctx.rotate(o.rot || 0);
+    const s = 1 - k * 0.35;
+    ctx.scale(s, s);
+  }
+  drawShape(o.type, t);
+  ctx.restore();
+}
+
+function drawShape(type, t){
+  // 1) Ưu tiên ảnh PNG nếu đã tải xong
+  if (drawSprite(type)) return;
+
+  // 2) Dự phòng: vẽ vector
+  switch (type){
+    case 'shark':     drawShark(t);     break;
+    case 'octopus':   drawOctopus(t);   break;
+    case 'snake':     drawSnake(t);     break;
+    case 'jellyfish': drawJellyfish(t); break;
+    default:          drawRock(t);
+  }
+}
+
+function waterFoam(w, y){
+  ctx.strokeStyle = 'rgba(255,255,255,.75)';
+  ctx.lineWidth = 4;
+  ctx.lineCap = 'round';
+  ctx.beginPath();
+  ctx.moveTo(-w, y);
+  ctx.quadraticCurveTo(0, y + 9, w, y);
+  ctx.stroke();
+}
+
+/* --------- Các hàm vector dự phòng --------- */
+function drawRock(){
+  ctx.fillStyle = 'rgba(0,0,0,.16)';
+  ctx.beginPath(); ctx.ellipse(0, 20, 70, 15, 0, 0, Math.PI * 2); ctx.fill();
+
+  const g = ctx.createLinearGradient(-60, -60, 60, 30);
+  g.addColorStop(0,   '#b3bfca');
+  g.addColorStop(0.55,'#8b98a6');
+  g.addColorStop(1,   '#5d6b78');
+  ctx.fillStyle = g;
+
+  ctx.beginPath();
+  ctx.moveTo(-62, 18); ctx.lineTo(-52, -18); ctx.lineTo(-26, -46);
+  ctx.lineTo(4, -56);  ctx.lineTo(34, -36);  ctx.lineTo(54, -8);
+  ctx.lineTo(64, 18);  ctx.closePath(); ctx.fill();
+
+  ctx.strokeStyle = 'rgba(255,255,255,.35)';
+  ctx.lineWidth = 3;
+  ctx.beginPath(); ctx.moveTo(-26,-46); ctx.lineTo(-8,-14); ctx.lineTo(-52,-18); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(-8,-14);  ctx.lineTo(34,-36); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(-8,-14);  ctx.lineTo(20,18);  ctx.stroke();
+
+  waterFoam(66, 16);
+}
+
+function drawShark(t){
+  const sway = Math.sin(t * 2) * 0.05;
+  ctx.save(); ctx.rotate(sway);
+
+  ctx.fillStyle = 'rgba(0,0,0,.15)';
+  ctx.beginPath(); ctx.ellipse(0, 22, 80, 14, 0, 0, Math.PI * 2); ctx.fill();
+
+  const g = ctx.createLinearGradient(0, -34, 0, 22);
+  g.addColorStop(0, '#86a4bc'); g.addColorStop(0.55,'#5c7d96'); g.addColorStop(1,'#e2f0f9');
+  ctx.fillStyle = g;
+
+  ctx.beginPath();
+  ctx.moveTo(-74, -2);
+  ctx.quadraticCurveTo(-42, -30, 10, -27);
+  ctx.quadraticCurveTo(50, -23, 76, -4);
+  ctx.quadraticCurveTo(50, 15, 10, 15);
+  ctx.quadraticCurveTo(-42, 13, -74, -2);
+  ctx.closePath(); ctx.fill();
+
+  ctx.beginPath(); ctx.moveTo(74,-4); ctx.lineTo(106,-32); ctx.lineTo(93,0); ctx.lineTo(108,18); ctx.closePath(); ctx.fill();
+  ctx.beginPath(); ctx.moveTo(-4,-27); ctx.lineTo(8,-62); ctx.lineTo(26,-22); ctx.closePath(); ctx.fill();
+  ctx.beginPath(); ctx.moveTo(-18,2); ctx.lineTo(-34,26); ctx.lineTo(8,12); ctx.closePath(); ctx.fill();
+
+  ctx.fillStyle = 'rgba(255,255,255,.75)';
+  ctx.beginPath(); ctx.moveTo(-70,2); ctx.quadraticCurveTo(-30,18,20,12); ctx.quadraticCurveTo(-20,16,-70,2); ctx.closePath(); ctx.fill();
+
+  ctx.fillStyle = '#ffffff'; ctx.beginPath(); ctx.arc(-52,-12,6,0,Math.PI*2); ctx.fill();
+  ctx.fillStyle = '#16212b'; ctx.beginPath(); ctx.arc(-53.5,-12,3,0,Math.PI*2); ctx.fill();
+
+  ctx.strokeStyle = '#22323f'; ctx.lineWidth = 3;
+  ctx.beginPath(); ctx.moveTo(-70,4); ctx.quadraticCurveTo(-56,12,-38,6); ctx.stroke();
+
+  ctx.fillStyle = '#ffffff';
+  for (let i = 0; i < 4; i++){
+    const x = -68 + i * 9;
+    ctx.beginPath(); ctx.moveTo(x,5); ctx.lineTo(x+3.5,11); ctx.lineTo(x+7,5); ctx.closePath(); ctx.fill();
+  }
+
+  ctx.restore();
+  waterFoam(72, 16);
+}
+
+function drawOctopus(t){
+  ctx.strokeStyle = '#9b51e0'; ctx.lineWidth = 10; ctx.lineCap = 'round';
+  for (let i = 0; i < 5; i++){
+    const bx = -48 + i * 24;
+    const sw = Math.sin(t * 2.6 + i * 0.8) * 16;
+    ctx.beginPath();
+    ctx.moveTo(bx, 6);
+    ctx.bezierCurveTo(bx - 16, 30, bx + sw, 46, bx + sw * 1.3, 64);
+    ctx.stroke();
+  }
+
+  const g = ctx.createLinearGradient(0, -70, 0, 12);
+  g.addColorStop(0,'#c084f5'); g.addColorStop(0.6,'#a45bd8'); g.addColorStop(1,'#7e3fb0');
+  ctx.fillStyle = g;
+  ctx.beginPath();
+  ctx.ellipse(0, -18, 50, 46, 0, Math.PI, 0);
+  ctx.lineTo(50, -14);
+  ctx.quadraticCurveTo(0, 14, -50, -14);
+  ctx.closePath(); ctx.fill();
+
+  ctx.fillStyle = 'rgba(255,255,255,.25)';
+  ctx.beginPath(); ctx.arc(-20,-34,7,0,Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.arc(16,-44,5,0,Math.PI*2); ctx.fill();
+
+  ctx.fillStyle = '#ffffff';
+  ctx.beginPath(); ctx.arc(-16,-22,11,0,Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.arc( 16,-22,11,0,Math.PI*2); ctx.fill();
+  ctx.fillStyle = '#1c1230';
+  const look = Math.sin(t * 1.5) * 2.5;
+  ctx.beginPath(); ctx.arc(-16+look,-22,5.5,0,Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.arc( 16+look,-22,5.5,0,Math.PI*2); ctx.fill();
+
+  ctx.strokeStyle = '#5b2a86'; ctx.lineWidth = 3; ctx.lineCap = 'round';
+  ctx.beginPath(); ctx.arc(0,-8,10,0.2*Math.PI,0.8*Math.PI); ctx.stroke();
+
+  waterFoam(64, 12);
+}
+
+function drawSnake(t){
+  ctx.save();
+  ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+
+  ctx.strokeStyle = '#2d8b52'; ctx.lineWidth = 17;
+  ctx.beginPath();
+  for (let i = 0; i <= 24; i++){
+    const p = i / 24, x = 74 - p * 150;
+    const y = Math.sin(p * Math.PI * 2.2 + t * 3) * 17 - 6;
+    if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+  }
+  ctx.stroke();
+
+  ctx.strokeStyle = '#58c47d'; ctx.lineWidth = 8;
+  ctx.beginPath();
+  for (let i = 0; i <= 24; i++){
+    const p = i / 24, x = 74 - p * 150;
+    const y = Math.sin(p * Math.PI * 2.2 + t * 3) * 17 - 10;
+    if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+  }
+  ctx.stroke();
+
+  const hx = -78, hy = Math.sin(t * 3) * 17 - 6;
+  ctx.fillStyle = '#3fae6a';
+  ctx.beginPath(); ctx.ellipse(hx, hy, 22, 17, 0, 0, Math.PI * 2); ctx.fill();
+
+  ctx.fillStyle = '#ffffff'; ctx.beginPath(); ctx.arc(hx-8, hy-5, 6, 0, Math.PI*2); ctx.fill();
+  ctx.fillStyle = '#132a1c'; ctx.beginPath(); ctx.arc(hx-10, hy-5, 3, 0, Math.PI*2); ctx.fill();
+
+  ctx.strokeStyle = '#e74c3c'; ctx.lineWidth = 3;
+  ctx.beginPath();
+  ctx.moveTo(hx - 20, hy + 4);
+  ctx.lineTo(hx - 34, hy + 2 + Math.sin(t*8)*3);
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(hx - 34, hy + 2 + Math.sin(t*8)*3);
+  ctx.lineTo(hx - 42, hy - 3 + Math.sin(t*8)*3);
+  ctx.moveTo(hx - 34, hy + 2 + Math.sin(t*8)*3);
+  ctx.lineTo(hx - 42, hy + 8 + Math.sin(t*8)*3);
+  ctx.stroke();
+
+  ctx.restore();
+  waterFoam(66, 14);
+}
+
+function drawJellyfish(t){
+  ctx.strokeStyle = 'rgba(255,150,200,.9)'; ctx.lineWidth = 5; ctx.lineCap = 'round';
+  for (let i = 0; i < 6; i++){
+    const x = -40 + i * 16;
+    const sw = Math.sin(t * 2.4 + i) * 14;
+    ctx.beginPath();
+    ctx.moveTo(x, 0);
+    ctx.quadraticCurveTo(x + sw, 32, x + sw * 1.4, 62);
+    ctx.stroke();
+  }
+
+  const g = ctx.createLinearGradient(0, -66, 0, 6);
+  g.addColorStop(0,'#ffd6ea'); g.addColorStop(0.6,'#ff9ecb'); g.addColorStop(1,'#ef6fb1');
+  ctx.fillStyle = g;
+  ctx.beginPath();
+  ctx.arc(0, -12, 46, Math.PI, 0);
+  ctx.lineTo(46, -12);
+  for (let i = 0; i <= 8; i++){
+    const p = i / 8, x = 46 - p * 92;
+    const y = -12 + Math.sin(p * Math.PI * 3 + t * 2) * 6;
+    ctx.lineTo(x, y);
+  }
+  ctx.closePath(); ctx.fill();
+
+  ctx.fillStyle = 'rgba(255,255,255,.55)';
+  ctx.beginPath(); ctx.arc(-16,-32,8,0,Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.arc(12,-42,5,0,Math.PI*2); ctx.fill();
+
+  ctx.fillStyle = '#7a2b58';
+  ctx.beginPath(); ctx.arc(-13,-20,4,0,Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.arc( 13,-20,4,0,Math.PI*2); ctx.fill();
+
+  waterFoam(50, 8);
+}
+
+/* ---------------- HẠT HIỆU ỨNG ---------------- */
+function burst(x, y, colors, n){
+  for (let i = 0; i < n; i++){
+    const a = Math.random() * Math.PI * 2;
+    const s = 60 + Math.random() * 230;
+    G.particles.push({
+      x, y,
+      vx: Math.cos(a) * s,
+      vy: Math.sin(a) * s - 90,
+      g: 430,
+      life: 0.6 + Math.random() * 0.5,
+      max: 1.1,
+      r: 2 + Math.random() * 4,
+      color: colors[(Math.random() * colors.length) | 0]
+    });
+  }
+}
+
+function drawParticles(){
+  for (const p of G.particles){
+    ctx.globalAlpha = Math.max(0, Math.min(1, p.life / p.max));
+    ctx.fillStyle = p.color;
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+    ctx.fill();
+  }
+  ctx.globalAlpha = 1;
+}
+
+/* =========================================================================
+   3) LUỒNG GAME & UI
+   ========================================================================= */
+const $ = id => document.getElementById(id);
+
+const startModal    = $('startModal');
+const questionModal = $('questionModal');
+const retryModal    = $('retryModal');
+const endModal      = $('endModal');
+
+const sentenceEl = $('sentence');
+const inputEl    = $('answerInput');
+const feedbackEl = $('feedback');
+
+let answered = false;
+
+function showModal(el){ el.classList.remove('hidden'); }
+function hideModal(el){ el.classList.add('hidden'); }
+function hideAllModals(){ [startModal, questionModal, retryModal, endModal].forEach(hideModal); }
+
+/* ---------- HUD ---------- */
+function renderLives(){
+  const el = $('lives');
+  el.innerHTML = '';
+  for (let i = 0; i < G.maxLives; i++){
+    const s = document.createElement('span');
+    s.className = 'heart' + (i < G.lives ? '' : ' lost');
+    s.textContent = i < G.lives ? '❤️' : '🤍';
+    el.appendChild(s);
+  }
+}
+
+function updateHUD(){
+  $('score').textContent = G.score;
+  const total = LESSON.questions.length;
+  const done = Math.min(G.qIndex, total);
+  $('progressFill').style.width = (total ? (done / total) * 100 : 0) + '%';
+  $('progText').textContent = done + '/' + total;
+}
+
+/* ---------- Vòng đời ---------- */
+function startGame(){
+  hideAllModals();
+  stopAudio();
+
+  G.mode = 'playing';
+  G.lives = G.maxLives;
+  G.score = 0;
+  G.qIndex = 0;
+  G.obstacle = null;
+  G.particles = [];
+  G.spawnTimer = 0;
+  G.sinkT = 0;
+  boat.sinkAngle = 0;
+  boat.sinkY = 0;
+  boat.speed = BASE_SPEED;
+
+  renderLives();
+  updateHUD();
+  spawnObstacle();
+}
+
+function spawnObstacle(){
+  const q = LESSON.questions[G.qIndex];
+  if (!q) return;
+  G.obstacle = {
+    type: q.obstacle_type,
+    q,
+    x: W + 190,
+    stopX: boat.x + Math.min(230, W * 0.32),
+    state: 'approach',
+    dieT: 0, dy: 0, rot: 0,
+    phase: Math.random() * Math.PI * 2
+  };
+}
+
+function triggerQuestion(){
+  G.mode = 'question';
+  boat.speed = 0;
+  openQuestion(G.obstacle.q);
+}
+
+/* ---------- Pop-up câu hỏi ---------- */
+function escapeHtml(s){
+  return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
+function buildSentence(q){
+  const parts = q.sentence_display.split(/_{2,}/);
+  const words = q.correct_answer.trim().split(/\s+/);
+  const n = Math.max(1, q.blank_length || words.length);
+  const html = [];
+
+  parts.forEach((part, i) => {
+    html.push(escapeHtml(part));
+    if (i < parts.length - 1){
+      for (let k = 0; k < n; k++){
+        const w = words[k] || '';
+        const ch = Math.max(3, Math.min(12, w.length || 4));
+        html.push(`<span class="blank" style="width:${ch}ch">&nbsp;</span>`);
+      }
+    }
+  });
+
+  sentenceEl.innerHTML = html.join('');
+}
+
+function openQuestion(q){
+  if (!q) return;
+  answered = false;
+  G.mode = 'question';
+
+  $('qBadge').textContent = `Câu ${Math.min(G.qIndex + 1, LESSON.questions.length)} / ${LESSON.questions.length}`;
+  $('qObstacle').textContent = OBSTACLE_LABEL[q.obstacle_type] || q.obstacle_type;
+
+  buildSentence(q);
+
+  inputEl.value = '';
+  inputEl.className = '';
+  inputEl.disabled = false;
+  feedbackEl.textContent = '';
+  feedbackEl.className = 'feedback';
+
+  showModal(questionModal);
+
+  setTimeout(() => {
+    inputEl.focus();
+    playAudioForQuestion(q);
+  }, 320);
+}
+
+function closeQuestion(){
+  stopAudio();
+  hideModal(questionModal);
+}
+
+/* ---------- Kiểm tra đáp án ---------- */
+function normalize(s){
+  return String(s)
+    .toLowerCase()
+    .replace(/[.,!?;:'"’“”]/g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+function checkAnswer(){
+  if (answered || G.mode !== 'question' || !G.obstacle) return;
+  const val = inputEl.value;
+  if (!val.trim()){
+    inputEl.classList.remove('wrong');
+    void inputEl.offsetWidth;
+    inputEl.classList.add('wrong');
+    return;
+  }
+  sfxClick();
+  const correct = normalize(G.obstacle.q.correct_answer);
+  if (normalize(val) === correct) handleCorrect();
+  else handleWrong();
+}
+
+function handleCorrect(){
+  answered = true;
+  inputEl.classList.add('correct');
+  inputEl.disabled = true;
+  feedbackEl.className = 'feedback ok';
+  feedbackEl.textContent = '✅ Chính xác!  +100 điểm';
+  sfxCorrect();
+
+  G.score += 100;
+  updateHUD();
+
+  setTimeout(() => {
+    closeQuestion();
+
+    if (G.obstacle){
+      G.obstacle.state = 'dying';
+      G.obstacle.dieT = 0;
+      G.obstacle.dy = 0;
+      G.obstacle.rot = 0;
+      burst(G.obstacle.x, waterY - 25, ['#ffd54f', '#ff8a65', '#4fc3f7', '#ffffff', '#a5f3b8'], 28);
+    }
+
+    G.qIndex++;
+    updateHUD();
+
+    boat.sinkAngle = 0;
+    boat.sinkY = 0;
+    G.mode = 'playing';
+  }, 760);
+}
+
+function handleWrong(){
+  answered = true;
+  inputEl.classList.add('wrong');
+  inputEl.disabled = true;
+  feedbackEl.className = 'feedback bad';
+  feedbackEl.textContent = '❌ Chưa đúng rồi!';
+  sfxWrong();
+
+  G.lives = Math.max(0, G.lives - 1);
+  renderLives();
+
+  setTimeout(() => {
+    closeQuestion();
+    startSinking();
+  }, 1000);
+}
+
+/* ---------- Thua / chìm thuyền ---------- */
+function startSinking(){
+  G.mode = 'sinking';
+  G.sinkT = 0;
+  boat.speed = 0;
+  burst(boat.x + 20, waterY, ['#ffffff', '#9fe0ff', '#4fc3f7'], 26);
+}
+
+/* ---------- Modal Thử lại ---------- */
+function showRetry(){
+  G.mode = 'retry';
+  $('retryLives').textContent = G.lives;
+  showModal(retryModal);
+}
+
+function retryQuestion(){
+  sfxClick();
+  hideModal(retryModal);
+  boat.sinkAngle = 0;
+  boat.sinkY = 0;
+  openQuestion(G.obstacle ? G.obstacle.q : null);
+}
+
+/* ---------- Modal Kết thúc ---------- */
+function showEnd(win){
+  G.mode = win ? 'won' : 'gameover';
+  stopAudio();
+
+  $('endEmoji').textContent = win ? '🏆' : '💔';
+  $('endTitle').textContent = win ? 'Hoàn thành bài học!' : 'Hết mạng rồi!';
+  $('endMsg').textContent = win
+    ? 'Tuyệt vời! Bạn đã chèo qua toàn bộ chặng đường của bài học này.'
+    : 'Thuyền của bạn đã bị lật. Đừng lo, hãy thử lại nhé!';
+  $('endScore').textContent = G.score;
+
+  const q = (G.obstacle && G.obstacle.q)
+    || LESSON.questions[Math.min(G.qIndex, LESSON.questions.length - 1)];
+  $('endAnswer').textContent = q ? `Đáp án: "${q.correct_answer}"` : '';
+
+  showModal(endModal);
+}
+
+/* ---------- Gắn sự kiện UI ---------- */
+$('btnStart').addEventListener('click', () => { sfxClick(); startGame(); });
+$('btnCheck').addEventListener('click', checkAnswer);
+$('btnReplay').addEventListener('click', () => {
+  sfxClick();
+  if (G.obstacle) playAudioForQuestion(G.obstacle.q);
+});
+$('btnRetry').addEventListener('click', retryQuestion);
+$('btnRestartFromRetry').addEventListener('click', () => { sfxClick(); startGame(); });
+$('btnPlayAgain').addEventListener('click', () => { sfxClick(); startGame(); });
+
+inputEl.addEventListener('keydown', e => {
+  if (e.key === 'Enter'){ e.preventDefault(); checkAnswer(); }
+});
+
+inputEl.addEventListener('focus', () => {
+  setTimeout(() => {
+    if (questionModal.classList.contains('hidden')) return;
+    const card = questionModal.querySelector('.card');
+    if (card) card.scrollTop = card.scrollHeight;
+  }, 320);
+});
+
+/* =========================================================================
+   4) KHỞI ĐỘNG
+   ========================================================================= */
+loadSprites();          // ⬅️ tải ảnh PNG (bất đồng bộ)
+initAudio();
+resize();
+renderLives();
+updateHUD();
+
+if ('speechSynthesis' in window){
+  window.speechSynthesis.onvoiceschanged = () => {};
+  window.speechSynthesis.getVoices();
+}
+
+requestAnimationFrame(loop);
+</script>
+</body>
+</html>
