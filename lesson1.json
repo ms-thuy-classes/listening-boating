@@ -2,23 +2,167 @@
   "lesson_title": "Learn with Ms. Thúy – Elephant Translocation",
   "audio_url": "audio.mp3",
   "questions": [
-    { "id":1, "obstacle_type":"rock",      "start_time":88.64,  "end_time":97.88,  "sentence_display":"This process is known as _____ and has been carried out in Malawi in Africa.", "correct_answer":"translocation", "blank_length":1 },
-    { "id":2, "obstacle_type":"octopus",   "start_time":100.64, "end_time":104.24, "sentence_display":"The reason for this is the _____ of elephants in some areas.", "correct_answer":"overpopulation", "blank_length":1 },
-    { "id":3, "obstacle_type":"shark",     "start_time":118.75, "end_time":127.68, "sentence_display":"Poachers killed the elephants for their _____.", "correct_answer":"ivory", "blank_length":1 },
-    { "id":4, "obstacle_type":"snake",     "start_time":127.68, "end_time":133.84, "sentence_display":"In 2003 the park was restocked and effective _____ was introduced.", "correct_answer":"law enforcement", "blank_length":2 },
-    { "id":5, "obstacle_type":"jellyfish", "start_time":144.95, "end_time":152.64, "sentence_display":"There were more elephants than the park could _____.", "correct_answer":"support", "blank_length":1 },
-    { "id":6, "obstacle_type":"rock",      "start_time":155.59, "end_time":158.51, "sentence_display":"There was more _____ for food among the elephants.", "correct_answer":"competition", "blank_length":1 },
-    { "id":7, "obstacle_type":"octopus",   "start_time":173.95, "end_time":178.20, "sentence_display":"Elephants were routinely _____ around the park.", "correct_answer":"knocking down fences", "blank_length":3 },
-    { "id":8, "obstacle_type":"shark",     "start_time":178.20, "end_time":184.95, "sentence_display":"The fences had to be repaired at a significant _____.", "correct_answer":"cost", "blank_length":1 },
-    { "id":9, "obstacle_type":"snake",     "start_time":200.59, "end_time":207.72, "sentence_display":"Moving elephants to a new home 300 km away is quite a _____.", "correct_answer":"challenge", "blank_length":1 },
-    { "id":10,"obstacle_type":"jellyfish", "start_time":247.51, "end_time":252.76, "sentence_display":"The vets used darts to _____ the elephants.", "correct_answer":"immobilize", "blank_length":1 },
-    { "id":11,"obstacle_type":"rock",      "start_time":258.68, "end_time":264.88, "sentence_display":"They had to select the right dose of _____ for different sized elephants.", "correct_answer":"tranquilizer", "blank_length":1 },
-    { "id":12,"obstacle_type":"octopus",   "start_time":283.72, "end_time":287.47, "sentence_display":"To avoid the risk of _____ , the team had to move in quickly.", "correct_answer":"suffocation", "blank_length":1 },
-    { "id":13,"obstacle_type":"shark",     "start_time":295.80, "end_time":302.60, "sentence_display":"All the elephants had to be placed on their _____.", "correct_answer":"sides", "blank_length":1 },
-    { "id":14,"obstacle_type":"snake",     "start_time":325.56, "end_time":331.16, "sentence_display":"Collars were fitted to the _____ in each group.", "correct_answer":"matriarch", "blank_length":1 },
-    { "id":15,"obstacle_type":"jellyfish", "start_time":348.63, "end_time":351.91, "sentence_display":"The elephants were taken to a _____ before being loaded onto trucks.", "correct_answer":"recovery area", "blank_length":2 },
-    { "id":16,"obstacle_type":"rock",      "start_time":387.00, "end_time":390.68, "sentence_display":"Former poachers are able to find more reliable sources of _____.", "correct_answer":"income", "blank_length":1 },
-    { "id":17,"obstacle_type":"octopus",   "start_time":416.63, "end_time":423.87, "sentence_display":"Their presence is helping to rebalance the park's damaged _____.", "correct_answer":"ecosystem", "blank_length":1 },
-    { "id":18,"obstacle_type":"shark",     "start_time":435.40, "end_time":442.96, "sentence_display":"Tourism contributes five times more than the illegal wildlife trade to _____.", "correct_answer":"GDP", "blank_length":1 }
+    {
+      "id": 1,
+      "obstacle_type": "rock",
+      "start_time": 79,
+      "end_time": 105,
+      "sentence_display": "This is known as _____ and has been carried out in Malawi in Africa in recent years.",
+      "correct_answer": "translocation",
+      "blank_length": 1
+    },
+    {
+      "id": 2,
+      "obstacle_type": "octopus",
+      "start_time": 105,
+      "end_time": 135,
+      "sentence_display": "Poachers killed the elephants for their _____.",
+      "correct_answer": "ivory",
+      "blank_length": 1
+    },
+    {
+      "id": 3,
+      "obstacle_type": "shark",
+      "start_time": 135,
+      "end_time": 149,
+      "sentence_display": "There were more elephants than the park could _____.",
+      "correct_answer": "support",
+      "blank_length": 1
+    },
+    {
+      "id": 4,
+      "obstacle_type": "snake",
+      "start_time": 149,
+      "end_time": 162,
+      "sentence_display": "Firstly, there was _____ for food.",
+      "correct_answer": "more competition",
+      "blank_length": 2
+    },
+    {
+      "id": 5,
+      "obstacle_type": "jellyfish",
+      "start_time": 162,
+      "end_time": 192,
+      "sentence_display": "Elephants were routinely _____ around the park.",
+      "correct_answer": "knocking down fences",
+      "blank_length": 3
+    },
+    {
+      "id": 6,
+      "obstacle_type": "rock",
+      "start_time": 162,
+      "end_time": 192,
+      "sentence_display": "The fences had to be repaired at a _____.",
+      "correct_answer": "significant cost",
+      "blank_length": 2
+    },
+    {
+      "id": 7,
+      "obstacle_type": "octopus",
+      "start_time": 192,
+      "end_time": 210,
+      "sentence_display": "Moving elephants to a new home 300 km away is quite a _____.",
+      "correct_answer": "challenge",
+      "blank_length": 1
+    },
+    {
+      "id": 8,
+      "obstacle_type": "shark",
+      "start_time": 225,
+      "end_time": 248,
+      "sentence_display": "The elephants were rounded up and directed to a designated _____.",
+      "correct_answer": "open plain",
+      "blank_length": 2
+    },
+    {
+      "id": 9,
+      "obstacle_type": "snake",
+      "start_time": 277,
+      "end_time": 303,
+      "sentence_display": "To avoid the risk of _____, the team had to make sure none of the elephants were lying on their chests.",
+      "correct_answer": "suffocation",
+      "blank_length": 1
+    },
+    {
+      "id": 10,
+      "obstacle_type": "jellyfish",
+      "start_time": 303,
+      "end_time": 346,
+      "sentence_display": "If there were fewer than six _____, the elephant would need urgent medical attention.",
+      "correct_answer": "breaths per minute",
+      "blank_length": 3
+    },
+    {
+      "id": 11,
+      "obstacle_type": "rock",
+      "start_time": 303,
+      "end_time": 346,
+      "sentence_display": "The elephant would need urgent _____.",
+      "correct_answer": "medical attention",
+      "blank_length": 2
+    },
+    {
+      "id": 12,
+      "obstacle_type": "octopus",
+      "start_time": 346,
+      "end_time": 371,
+      "sentence_display": "The elephants were then taken to a _____ before being loaded onto trucks.",
+      "correct_answer": "recovery area",
+      "blank_length": 2
+    },
+    {
+      "id": 13,
+      "obstacle_type": "shark",
+      "start_time": 371,
+      "end_time": 398,
+      "sentence_display": "_____ have improved enormously, contributing to rising living standards.",
+      "correct_answer": "employment prospects",
+      "blank_length": 2
+    },
+    {
+      "id": 14,
+      "obstacle_type": "snake",
+      "start_time": 371,
+      "end_time": 398,
+      "sentence_display": "Employment prospects have improved enormously, contributing to _____ for the whole community.",
+      "correct_answer": "rising living standards",
+      "blank_length": 3
+    },
+    {
+      "id": 15,
+      "obstacle_type": "jellyfish",
+      "start_time": 371,
+      "end_time": 398,
+      "sentence_display": "Former poachers are able to find more reliable _____.",
+      "correct_answer": "sources of income",
+      "blank_length": 3
+    },
+    {
+      "id": 16,
+      "obstacle_type": "rock",
+      "start_time": 398,
+      "end_time": 429,
+      "sentence_display": "Their presence is helping to rebalance Nkotakota's damaged ecosystem and providing a _____ model which could be replicated in other parks.",
+      "correct_answer": "sustainable conservation",
+      "blank_length": 2
+    },
+    {
+      "id": 17,
+      "obstacle_type": "octopus",
+      "start_time": 105,
+      "end_time": 135,
+      "sentence_display": "In 2003, the park was restocked and effective _____ was introduced.",
+      "correct_answer": "law enforcement",
+      "blank_length": 2
+    },
+    {
+      "id": 18,
+      "obstacle_type": "shark",
+      "start_time": 429,
+      "end_time": 451,
+      "sentence_display": "Tourism contributes five times more than the _____ to GDP.",
+      "correct_answer": "illegal wildlife trade",
+      "blank_length": 3
+    }
   ]
 }
