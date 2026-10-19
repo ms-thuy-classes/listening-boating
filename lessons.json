@@ -1,0 +1,28 @@
+{
+  "lessons": [
+    {
+      "id": 1,
+      "title": "Elephant Translocation",
+      "description": "IELTS Listening – Section 4 (Malawi elephants)",
+      "icon": "🐘",
+      "difficulty": "Khó",
+      "question_count": 18
+    },
+    {
+      "id": 2,
+      "title": "Daily Routines",
+      "description": "Everyday English – Present Simple",
+      "icon": "☀️",
+      "difficulty": "Dễ",
+      "question_count": 8
+    },
+    {
+      "id": 3,
+      "title": "Travel & Transport",
+      "description": "Airport, hotel, directions",
+      "icon": "✈️",
+      "difficulty": "Trung bình",
+      "question_count": 10
+    }
+  ]
+}
