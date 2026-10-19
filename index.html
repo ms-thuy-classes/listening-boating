@@ -272,41 +272,216 @@ body{user-select:none;-webkit-user-select:none;}
 /* =========================================================================
    1) DỮ LIỆU BÀI HỌC  (LESSON DATA)
    ========================================================================= */
+/* =========================================================================
+   LESSON DATA — Elephant Translocation (IELTS Listening Section 4)
+   -------------------------------------------------------------------------
+   ⚠️ audio_url = null  →  Game sẽ dùng Text-to-Speech đọc câu.
+       Muốn dùng audio thật: thay bằng "elephant.mp3" (hoặc URL),
+       timestamps start_time / end_time sẽ tự động cắt đúng đoạn.
+   ========================================================================= */
 const LESSON = {
-  lesson_title: "Learn with Ms. Thúy - Chapter 1",
-  audio_url: null,                 // ví dụ: "listening_track_1.mp3"
+  lesson_title: "Learn with Ms. Thúy – Elephant Translocation",
+  audio_url: null,      // ← đổi thành "elephant.mp3" nếu có file audio
   questions: [
-    { id:1, obstacle_type:"rock",      start_time:0.5, end_time:4.2,
-      sentence_display:"She goes to the _____ every morning.",
-      correct_answer:"market", blank_length:1 },
 
-    { id:2, obstacle_type:"octopus",   start_time:4.5, end_time:9.0,
-      sentence_display:"They are planning to _____ next week.",
-      correct_answer:"buy a car", blank_length:3 },
+    // ── Câu 1: translocation ──────────────────────────────────
+    {
+      id: 1,
+      obstacle_type: "rock",
+      start_time: 88.64,
+      end_time: 97.88,
+      sentence_display: "This process is known as _____ and has been carried out in Malawi in Africa.",
+      correct_answer: "translocation",
+      blank_length: 1
+    },
 
-    { id:3, obstacle_type:"shark",     start_time:9.4, end_time:13.1,
-      sentence_display:"I usually _____ at six o'clock.",
-      correct_answer:"wake up", blank_length:2 },
+    // ── Câu 2: overpopulation ─────────────────────────────────
+    {
+      id: 2,
+      obstacle_type: "octopus",
+      start_time: 100.64,
+      end_time: 104.24,
+      sentence_display: "The reason for this is the _____ of elephants in some areas.",
+      correct_answer: "overpopulation",
+      blank_length: 1
+    },
 
-    { id:4, obstacle_type:"snake",     start_time:13.5, end_time:18.0,
-      sentence_display:"The weather is really _____ today.",
-      correct_answer:"nice and warm", blank_length:3 },
+    // ── Câu 3: ivory ──────────────────────────────────────────
+    {
+      id: 3,
+      obstacle_type: "shark",
+      start_time: 118.75,
+      end_time: 127.68,
+      sentence_display: "Poachers killed the elephants for their _____.",
+      correct_answer: "ivory",
+      blank_length: 1
+    },
 
-    { id:5, obstacle_type:"jellyfish", start_time:18.4, end_time:22.2,
-      sentence_display:"He has lived here _____ 2015.",
-      correct_answer:"since", blank_length:1 },
+    // ── Câu 4: law enforcement ────────────────────────────────
+    {
+      id: 4,
+      obstacle_type: "snake",
+      start_time: 127.68,
+      end_time: 133.84,
+      sentence_display: "In 2003 the park was restocked and effective _____ was introduced.",
+      correct_answer: "law enforcement",
+      blank_length: 2
+    },
 
-    { id:6, obstacle_type:"rock",      start_time:22.6, end_time:26.5,
-      sentence_display:"Could you please _____ the window?",
-      correct_answer:"open", blank_length:1 },
+    // ── Câu 5: support ────────────────────────────────────────
+    {
+      id: 5,
+      obstacle_type: "jellyfish",
+      start_time: 144.95,
+      end_time: 152.64,
+      sentence_display: "There were more elephants than the park could _____.",
+      correct_answer: "support",
+      blank_length: 1
+    },
 
-    { id:7, obstacle_type:"octopus",   start_time:26.9, end_time:31.4,
-      sentence_display:"We should _____ before the rain comes.",
-      correct_answer:"head back home", blank_length:3 },
+    // ── Câu 6: competition ────────────────────────────────────
+    {
+      id: 6,
+      obstacle_type: "rock",
+      start_time: 155.59,
+      end_time: 158.51,
+      sentence_display: "There was more _____ for food among the elephants.",
+      correct_answer: "competition",
+      blank_length: 1
+    },
 
-    { id:8, obstacle_type:"shark",     start_time:31.8, end_time:35.6,
-      sentence_display:"My sister is good _____ playing the piano.",
-      correct_answer:"at", blank_length:1 }
+    // ── Câu 7: knocking down fences (3 words) ─────────────────
+    {
+      id: 7,
+      obstacle_type: "octopus",
+      start_time: 173.95,
+      end_time: 178.20,
+      sentence_display: "Elephants were routinely _____ around the park.",
+      correct_answer: "knocking down fences",
+      blank_length: 3
+    },
+
+    // ── Câu 8: cost ───────────────────────────────────────────
+    {
+      id: 8,
+      obstacle_type: "shark",
+      start_time: 178.20,
+      end_time: 184.95,
+      sentence_display: "The fences had to be repaired at a significant _____.",
+      correct_answer: "cost",
+      blank_length: 1
+    },
+
+    // ── Câu 9: challenge ──────────────────────────────────────
+    {
+      id: 9,
+      obstacle_type: "snake",
+      start_time: 200.59,
+      end_time: 207.72,
+      sentence_display: "Moving elephants to a new home 300 km away is quite a _____.",
+      correct_answer: "challenge",
+      blank_length: 1
+    },
+
+    // ── Câu 10: immobilize ────────────────────────────────────
+    {
+      id: 10,
+      obstacle_type: "jellyfish",
+      start_time: 247.51,
+      end_time: 252.76,
+      sentence_display: "The vets used darts to _____ the elephants.",
+      correct_answer: "immobilize",
+      blank_length: 1
+    },
+
+    // ── Câu 11: tranquilizer ──────────────────────────────────
+    {
+      id: 11,
+      obstacle_type: "rock",
+      start_time: 258.68,
+      end_time: 264.88,
+      sentence_display: "They had to select the right dose of _____ for different sized elephants.",
+      correct_answer: "tranquilizer",
+      blank_length: 1
+    },
+
+    // ── Câu 12: suffocation ───────────────────────────────────
+    {
+      id: 12,
+      obstacle_type: "octopus",
+      start_time: 283.72,
+      end_time: 287.47,
+      sentence_display: "To avoid the risk of _____ , the team had to move in quickly.",
+      correct_answer: "suffocation",
+      blank_length: 1
+    },
+
+    // ── Câu 13: sides ─────────────────────────────────────────
+    {
+      id: 13,
+      obstacle_type: "shark",
+      start_time: 295.80,
+      end_time: 302.60,
+      sentence_display: "All the elephants had to be placed on their _____.",
+      correct_answer: "sides",
+      blank_length: 1
+    },
+
+    // ── Câu 14: matriarch ─────────────────────────────────────
+    {
+      id: 14,
+      obstacle_type: "snake",
+      start_time: 325.56,
+      end_time: 331.16,
+      sentence_display: "Collars were fitted to the _____ in each group.",
+      correct_answer: "matriarch",
+      blank_length: 1
+    },
+
+    // ── Câu 15: recovery area (2 words) ───────────────────────
+    {
+      id: 15,
+      obstacle_type: "jellyfish",
+      start_time: 348.63,
+      end_time: 351.91,
+      sentence_display: "The elephants were taken to a _____ before being loaded onto trucks.",
+      correct_answer: "recovery area",
+      blank_length: 2
+    },
+
+    // ── Câu 16: income ────────────────────────────────────────
+    {
+      id: 16,
+      obstacle_type: "rock",
+      start_time: 387.00,
+      end_time: 390.68,
+      sentence_display: "Former poachers are able to find more reliable sources of _____.",
+      correct_answer: "income",
+      blank_length: 1
+    },
+
+    // ── Câu 17: ecosystem ─────────────────────────────────────
+    {
+      id: 17,
+      obstacle_type: "octopus",
+      start_time: 416.63,
+      end_time: 423.87,
+      sentence_display: "Their presence is helping to rebalance the park's  _____.",
+      correct_answer: "damaged ecosystem",
+      blank_length: 2
+    },
+
+    // ── Câu 18: illegal wildlife trade ───────────────────────────────────────────
+    {
+      id: 18,
+      obstacle_type: "shark",
+      start_time: 435.40,
+      end_time: 442.96,
+      sentence_display: "Tourism contributes five times more than the _____ to GDP.",
+      correct_answer: "illegal wildlife trade",
+      blank_length: 3
+    }
+
   ]
 };
 
