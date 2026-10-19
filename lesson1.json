@@ -5,8 +5,8 @@
     {
       "id": 1,
       "obstacle_type": "rock",
-      "start_time": 79,
-      "end_time": 105,
+      "start_time": 89.664,
+      "end_time": 96.864,
       "sentence_display": "This is known as _____ and has been carried out in Malawi in Africa in recent years.",
       "correct_answer": "translocation",
       "blank_length": 1
@@ -14,8 +14,8 @@
     {
       "id": 2,
       "obstacle_type": "octopus",
-      "start_time": 105,
-      "end_time": 135,
+      "start_time": 116.448,
+      "end_time": 122.412,
       "sentence_display": "Poachers killed the elephants for their _____.",
       "correct_answer": "ivory",
       "blank_length": 1
@@ -23,8 +23,8 @@
     {
       "id": 3,
       "obstacle_type": "shark",
-      "start_time": 135,
-      "end_time": 149,
+      "start_time": 142.368,
+      "end_time": 148.108,
       "sentence_display": "There were more elephants than the park could _____.",
       "correct_answer": "support",
       "blank_length": 1
@@ -32,8 +32,8 @@
     {
       "id": 4,
       "obstacle_type": "snake",
-      "start_time": 149,
-      "end_time": 162,
+      "start_time": 152.448,
+      "end_time": 156.192,
       "sentence_display": "Firstly, there was _____ for food.",
       "correct_answer": "more competition",
       "blank_length": 2
@@ -41,8 +41,8 @@
     {
       "id": 5,
       "obstacle_type": "jellyfish",
-      "start_time": 162,
-      "end_time": 192,
+      "start_time": 170.880,
+      "end_time": 176.060,
       "sentence_display": "Elephants were routinely _____ around the park.",
       "correct_answer": "knocking down fences",
       "blank_length": 3
@@ -50,8 +50,8 @@
     {
       "id": 6,
       "obstacle_type": "rock",
-      "start_time": 162,
-      "end_time": 192,
+      "start_time": 176.736,
+      "end_time": 181.116,
       "sentence_display": "The fences had to be repaired at a _____.",
       "correct_answer": "significant cost",
       "blank_length": 2
@@ -59,8 +59,8 @@
     {
       "id": 7,
       "obstacle_type": "octopus",
-      "start_time": 192,
-      "end_time": 210,
+      "start_time": 195.648,
+      "end_time": 205.308,
       "sentence_display": "Moving elephants to a new home 300 km away is quite a _____.",
       "correct_answer": "challenge",
       "blank_length": 1
@@ -68,8 +68,8 @@
     {
       "id": 8,
       "obstacle_type": "shark",
-      "start_time": 225,
-      "end_time": 248,
+      "start_time": 241.740,
+      "end_time": 247.104,
       "sentence_display": "The elephants were rounded up and directed to a designated _____.",
       "correct_answer": "open plain",
       "blank_length": 2
@@ -77,8 +77,8 @@
     {
       "id": 9,
       "obstacle_type": "snake",
-      "start_time": 277,
-      "end_time": 303,
+      "start_time": 284.928,
+      "end_time": 287.232,
       "sentence_display": "To avoid the risk of _____, the team had to make sure none of the elephants were lying on their chests.",
       "correct_answer": "suffocation",
       "blank_length": 1
@@ -86,8 +86,8 @@
     {
       "id": 10,
       "obstacle_type": "jellyfish",
-      "start_time": 303,
-      "end_time": 346,
+      "start_time": 315.360,
+      "end_time": 319.104,
       "sentence_display": "If there were fewer than six _____, the elephant would need urgent medical attention.",
       "correct_answer": "breaths per minute",
       "blank_length": 3
@@ -95,8 +95,8 @@
     {
       "id": 11,
       "obstacle_type": "rock",
-      "start_time": 303,
-      "end_time": 346,
+      "start_time": 319.488,
+      "end_time": 322.620,
       "sentence_display": "The elephant would need urgent _____.",
       "correct_answer": "medical attention",
       "blank_length": 2
@@ -104,8 +104,8 @@
     {
       "id": 12,
       "obstacle_type": "octopus",
-      "start_time": 346,
-      "end_time": 371,
+      "start_time": 346.176,
+      "end_time": 350.938,
       "sentence_display": "The elephants were then taken to a _____ before being loaded onto trucks.",
       "correct_answer": "recovery area",
       "blank_length": 2
@@ -113,8 +113,8 @@
     {
       "id": 13,
       "obstacle_type": "shark",
-      "start_time": 371,
-      "end_time": 398,
+      "start_time": 371.040,
+      "end_time": 374.940,
       "sentence_display": "_____ have improved enormously, contributing to rising living standards.",
       "correct_answer": "employment prospects",
       "blank_length": 2
@@ -122,8 +122,8 @@
     {
       "id": 14,
       "obstacle_type": "snake",
-      "start_time": 371,
-      "end_time": 398,
+      "start_time": 375.648,
+      "end_time": 379.788,
       "sentence_display": "Employment prospects have improved enormously, contributing to _____ for the whole community.",
       "correct_answer": "rising living standards",
       "blank_length": 3
@@ -131,8 +131,8 @@
     {
       "id": 15,
       "obstacle_type": "jellyfish",
-      "start_time": 371,
-      "end_time": 398,
+      "start_time": 384.912,
+      "end_time": 388.992,
       "sentence_display": "Former poachers are able to find more reliable _____.",
       "correct_answer": "sources of income",
       "blank_length": 3
@@ -140,8 +140,8 @@
     {
       "id": 16,
       "obstacle_type": "rock",
-      "start_time": 398,
-      "end_time": 429,
+      "start_time": 421.724,
+      "end_time": 425.330,
       "sentence_display": "Their presence is helping to rebalance Nkotakota's damaged ecosystem and providing a _____ model which could be replicated in other parks.",
       "correct_answer": "sustainable conservation",
       "blank_length": 2
@@ -149,8 +149,8 @@
     {
       "id": 17,
       "obstacle_type": "octopus",
-      "start_time": 105,
-      "end_time": 135,
+      "start_time": 127.776,
+      "end_time": 130.876,
       "sentence_display": "In 2003, the park was restocked and effective _____ was introduced.",
       "correct_answer": "law enforcement",
       "blank_length": 2
@@ -158,8 +158,8 @@
     {
       "id": 18,
       "obstacle_type": "shark",
-      "start_time": 429,
-      "end_time": 451,
+      "start_time": 434.835,
+      "end_time": 439.804,
       "sentence_display": "Tourism contributes five times more than the _____ to GDP.",
       "correct_answer": "illegal wildlife trade",
       "blank_length": 3
